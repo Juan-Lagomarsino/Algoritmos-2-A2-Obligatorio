@@ -5,6 +5,7 @@
 
 using namespace std;
 
+//Dice que se hace con hash , y el hash debe usar una funcion de doble hash. Pero no se sobre que, no lo pense.
 struct ____ {
     int cantidadaRecursos;
     
@@ -53,6 +54,10 @@ class ___ {
     
 };
 
+int funcionHash(___){
+    //esto tiene que ser doble hash.
+
+} 
 
 int main()
 {
