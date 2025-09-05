@@ -6,10 +6,11 @@
 using namespace std;
 //Entiendo que no hay que usar templates porque el tipo es uno solo.
 struct NodoAVL{
-    string idJugador;
+    int idJugador;
     string nombreUsuario;
     int puntajeActual;
     int alturaAVL;
+    int cantidadJugadores;
     NodoAVL * izq;
     NodoAVL * der;
 };
@@ -19,7 +20,31 @@ class AVL {
     NodoAVL * raizId;
     NodoAVL * raizPuntaje;
 
-    
+    int alturaPermitida(NodoAVL * nodo){
+        /* if(nodo==NULL)return 0;
+        else return nodo->alturaAVL;
+        */
+    }
+    int balance(NodoAVL * nodo){
+
+    }
+    void actualizarAlturaNodo(NodoAVL * nodo ){
+
+    }
+    void actualizarCantidad(NodoAVL * nodo){
+
+    }
+    void rotacionDerecha(NodoAVL * nodo){
+
+    }
+    void rotacionIzquierda(NodoAVL * nodo){
+
+    }
+    void ADDRecursivo(){
+
+    }
+
+
 
     public:
     AVL () {
@@ -27,7 +52,7 @@ class AVL {
         raizPuntaje = NULL;
     };
     void ADD(string id, string nombre, int puntaje){
-        //Logica
+        //Logica tiene que mandar recursivo a this->raizId, y this->raizPuntaje
     };
 
     void FIND(string id){
@@ -43,7 +68,7 @@ class AVL {
     }
 
     void COUNT(){
-        //Logica
+        //Logica tiene que ser this->cantidadElementos
     }
 };
 
