@@ -5,55 +5,55 @@
 
 using namespace std;
 // Entendemos que no hay que usar templates porque el tipo es uno solo.
-struct NodoAVL
-{
+struct Jugador {
     int idJugador;
     string nombreUsuario;
     int puntajeActual; // O(1)
+    Jugador(int id,string nombre,int puntaje) : idJugador(id),nombreUsuario(nombre), puntajeActual(puntaje) {}
+};
+struct NodoAVL{
+    Jugador * jugador;
     int alturaAVL;
-    NodoAVL *izq;
-    NodoAVL *der;
-    NodoAVL(int id, string user, int ptj) : idJugador(id), nombreUsuario(user), puntajeActual(ptj), alturaAVL(1), izq(NULL), der(NULL) {}
+    NodoAVL * izq;
+    NodoAVL * der;
+    int cantidadJugadores; // O(1)
+    NodoAVL():jugador(NULL),alturaAVL(1), izq(NULL), der(NULL) {}
 };
 
 class AVL
 {
 private:
-    NodoAVL *raizId;
-    NodoAVL *raizPuntaje;
-    NodoAVL *top1;
-    int cantidadJugadores; // O(1)
-
-    int alturaPermitida(NodoAVL *nodo)
-    {
-        if (nodo == NULL)
-        {
+    NodoAVL * raizId;
+    NodoAVL * raizPuntaje;
+    Jugador * top1;
+    
+    int alturaPermitida(NodoAVL*nodo){
+        if (nodo == NULL){
             return 0;
-        }
-        else
-        {
+        }else{
             return nodo->alturaAVL;
         }
     }
 
-    int darBalance(NodoAVL *nodo)
-    {
-        if (nodo == NULL)
-        {
+    int darBalance(NodoAVL *nodo){
+        if (nodo == NULL){
             return 0;
         }
-        else
-        {
+        else{
             return alturaPermitida(nodo->der) - alturaPermitida(nodo->izq);
         }
     }
 
-    void actualizarAlturaNodo(NodoAVL *nodo)
+    void actualizarAlturaNodo(NodoAVL*nodo)
     {
         if (nodo != NULL)
         {
             nodo->alturaAVL = 1 + max(alturaPermitida(nodo->izq), alturaPermitida(nodo->der));
         }
+    }
+
+    void actualizarCantidadJugadores(NodoAVL*nodo){
+        nodo->cantidadJugadores++;
     }
 
     void rotacionDerecha(NodoAVL *&B)
@@ -73,19 +73,19 @@ private:
         NodoAVL *T2 = B->izq;
         A->der = T2;
         B->izq = A;
-        actualizarAlturaNodo(B);
         actualizarAlturaNodo(A);
+        actualizarAlturaNodo(B);
         A = B;
     }
 
     void ADDRecursivoId(NodoAVL *&nodo, int id, string nombre, int puntaje){
         if(nodo == NULL) {
-            nodo = new NodoAVL(id, nombre, puntaje);
-            this->cantidadJugadores++;
-            this->ADDRecursivoPtj(this->raizPuntaje, id, nombre, puntaje);
-        } else if (nodo->idJugador < id){
+            nodo = new NodoAVL();
+            nodo->jugador= new Jugador(id, nombre, puntaje);
+            ADDRecursivoPtj()
+        } else if (nodo->jugador->idJugador < id){
             ADDRecursivoId(nodo->der, id, nombre, puntaje);
-        } else if (nodo->idJugador > id){
+        } else if (nodo->jugador->idJugador > id){
             ADDRecursivoId(nodo->izq, id, nombre, puntaje);
         }else{
             return;
@@ -97,21 +97,20 @@ private:
         int balance = darBalance(nodo);
         
         // caso izq izq
-        if(balance < -1 && nodo->izq->idJugador > id) {
+        if(balance < -1 && nodo->izq->jugador->idJugador > id) {
             rotacionDerecha(nodo);
         // caso izq der
-        }else if( balance < -1 && nodo->izq->idJugador < id) {
+        }else if( balance < -1 && nodo->izq->jugador->idJugador < id) {
             rotacionIzquierda(nodo->izq);
             rotacionDerecha(nodo);
         // caso der der
-        }else if(balance > 1 && nodo->der->idJugador < id) {
+        }else if(balance > 1 && nodo->der->jugador->idJugador < id) {
             rotacionIzquierda(nodo);
         // caso der izq
-        }else if( balance > 1 && nodo->der->idJugador > id) {
+        }else if( balance > 1 && nodo->der->jugador->idJugador > id) {
             rotacionDerecha(nodo->der);
             rotacionIzquierda(nodo);
         }
-        
     }
     
     void ADDRecursivoPtj(NodoAVL *&nodo, int id, string nombre, int puntaje){
@@ -132,17 +131,17 @@ private:
         int balance = darBalance(nodo);
         
         // caso izq izq
-        if(balance < -1 && nodo->izq->puntajeActual > puntaje) {
+        if(balance < -1 && nodo->izq->jugador->puntajeActual > puntaje) {
             rotacionDerecha(nodo);
         // caso izq der
-        }else if( balance < -1 && nodo->izq->puntajeActual < puntaje) {
+        }else if( balance < -1 && nodo->izq->jugador->puntajeActual < puntaje) {
             rotacionIzquierda(nodo->izq);
             rotacionDerecha(nodo);
         // caso der der
-        }else if(balance > 1 && nodo->der->puntajeActual < puntaje) {
+        }else if(balance > 1 && nodo->der->jugador->puntajeActual < puntaje) {
             rotacionIzquierda(nodo);
         // caso der izq
-        }else if( balance > 1 && nodo->der->puntajeActual > puntaje) {
+        }else if( balance > 1 && nodo->der->jugador->puntajeActual > puntaje) {
             rotacionDerecha(nodo->der);
             rotacionIzquierda(nodo);
         }
@@ -183,7 +182,7 @@ public:
     };
     void ADD(int id, string nombre, int puntaje) {
         this->ADDRecursivoId(this->raizId, id, nombre, puntaje);
-        
+        this->ADDRecursivoPtj(this->raizPuntaje, id, nombre, puntaje);
     };
 
     void FIND(int id) {
@@ -197,7 +196,7 @@ public:
 
     void TOP1()
     {
-        if(this->top1==NULL){
+        if(this->raizPuntaje==NULL){
             cout << "sin_jugadores" << endl;
         }else{
             cout << this->top1->nombreUsuario << " " << this->top1->puntajeActual << endl;
@@ -215,7 +214,7 @@ int main()
 {
     AVL * ejercicio1 = new AVL();
 
-    /*ejercicio1->ADD(101, "Alice", 750);
+    ejercicio1->ADD(101, "Alice", 750);
     ejercicio1->ADD(202,"Bob" ,850);
     ejercicio1->ADD (303,"Charlie", 600);
     ejercicio1->FIND(202);
@@ -225,8 +224,8 @@ int main()
     ejercicio1->ADD (404 ,"Diana", 850);
     ejercicio1->TOP1();
     ejercicio1->ADD (202, "Bobby", 900);
-    ejercicio1->COUNT();*/
-    int n;
+    ejercicio1->COUNT();
+    /*int n;
     cin >> n;
     cin.ignore(); // Limpia el espacio para depsues no haya errores de identacion.
 
@@ -235,83 +234,46 @@ int main()
         string opcion;
         getline(cin,opcion); // Que agarre toda la palabra
         char primerLetra = opcion.front();
+        int pos = opcion.find(" ");
+        string inst = opcion.substr(pos,opcion.length()-pos);
             
         if (primerLetra == 'A')
-        {   
-            if (primerLetra == 'A') {
-    int pos1 = opcion.find(" ");
-    int pos2 = opcion.find(" ", pos1 + 1);
-    int pos3 = opcion.find(" ", pos2 + 1);
-
-    int id = stoi(opcion.substr(pos1 + 1, pos2 - pos1 - 1));
-    string nombre = opcion.substr(pos2 + 1, pos3 - pos2 - 1);
-    int puntaje = stoi(opcion.substr(pos3 + 1));
-
-        ejercicio1->ADD(id, nombre, puntaje);
-            }
+        {
+            int id = stoi(inst.substr(0,inst.find(" "))); //stoi es el parseInt, substr corta la cadena.
+            inst = inst.substr(0,inst.find(" "));
+            string nombre = inst.substr(0,inst.find(" ")); //stoi es el parseInt, substr corta la cadena.
+            inst = inst.substr(0,inst.find(" "));
+            int puntaje = stoi(inst.substr(0,inst.find(" ")));
+            
+            ejercicio1->ADD(id,nombre,puntaje);
         }
         else if (primerLetra == 'F')
-        {   
-            int pos = opcion.find(" ");
-            string inst = opcion.substr(pos,opcion.length()-pos);
-            int id = stoi(inst);
-            ejercicio1->FIND(id);
+        {
+
         }
         else if (primerLetra == 'R')
-        {   
-            int pos = opcion.find(" ");
-            string inst = opcion.substr(pos,opcion.length()-pos);
-            int puntaje = stoi(inst);
-            ejercicio1->RANK(puntaje);
+        {
 
         }
         else if (primerLetra == 'T')
         {
-            ejercicio1->TOP1();
+
         }
         else if (primerLetra == 'C')
         {
-            ejercicio1->COUNT();
+
+        }
+        else
+        {
+            return; // No deberia pasar.
         }
     }
+*/
+    /*
 
-        /*
-        string linea;
-    getline(cin, linea); // leo toda la línea completa
+    Aca va a haber algo con un switch con las operaciones, tipo ADD FIND RANK TOP1 COUNT
 
-    // obtengo el comando (primera palabra)
-    int pos = linea.find(' ');
-    string comando;
-    if (pos == string::npos) {
-        comando = linea; // comando solo (ej: "TOP1")
-    } else {
-        comando = linea.substr(0, pos);
-    }
-
-    if (comando == "ADD") {
-        int pos1 = linea.find(' ', pos + 1);
-        int pos2 = linea.find(' ', pos1 + 1);
-
-        int id = stoi(linea.substr(pos + 1, pos1 - (pos + 1)));
-        string nombre = linea.substr(pos1 + 1, pos2 - (pos1 + 1));
-        int puntaje = stoi(linea.substr(pos2 + 1));
-
-        ejercicio1->ADD(id, nombre, puntaje);
-
-    } else if (comando == "FIND") {
-        int id = stoi(linea.substr(pos + 1));
-        ejercicio1->FIND(id);
-
-    } else if (comando == "RANK") {
-        int puntaje = stoi(linea.substr(pos + 1));
-        ejercicio1->RANK(puntaje);
-
-    } else if (comando == "TOP1") {
-        ejercicio1->TOP1();
-
-    } else if (comando == "COUNT") {
-        ejercicio1->COUNT();
-    }
-    }
+    Esa era la idea original pero no se podia hacer switch con strings.
     */
+    
 }
