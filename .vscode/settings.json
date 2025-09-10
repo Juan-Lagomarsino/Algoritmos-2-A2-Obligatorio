@@ -4,6 +4,7 @@
         "ostream": "cpp",
         "limits": "cpp",
         "cassert": "cpp",
-        "__locale": "cpp"
+        "__locale": "cpp",
+        "xstring": "cpp"
     }
 }
