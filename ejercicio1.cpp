@@ -214,18 +214,6 @@ public:
 int main()
 {
     AVL * ejercicio1 = new AVL();
-
-    /*ejercicio1->ADD(101, "Alice", 750);
-    ejercicio1->ADD(202,"Bob" ,850);
-    ejercicio1->ADD (303,"Charlie", 600);
-    ejercicio1->FIND(202);
-    ejercicio1->TOP1();
-    ejercicio1->COUNT();
-    ejercicio1->RANK(700);
-    ejercicio1->ADD (404 ,"Diana", 850);
-    ejercicio1->TOP1();
-    ejercicio1->ADD (202, "Bobby", 900);
-    ejercicio1->COUNT();*/
     int n;
     cin >> n;
     cin.ignore(); // Limpia el espacio para depsues no haya errores de identacion.
@@ -239,15 +227,15 @@ int main()
         if (primerLetra == 'A')
         {   
             if (primerLetra == 'A') {
-    int pos1 = opcion.find(" ");
-    int pos2 = opcion.find(" ", pos1 + 1);
-    int pos3 = opcion.find(" ", pos2 + 1);
+                int pos1 = opcion.find(" ");
+                int pos2 = opcion.find(" ", pos1 + 1);
+                int pos3 = opcion.find(" ", pos2 + 1);
 
-    int id = stoi(opcion.substr(pos1 + 1, pos2 - pos1 - 1));
-    string nombre = opcion.substr(pos2 + 1, pos3 - pos2 - 1);
-    int puntaje = stoi(opcion.substr(pos3 + 1));
+                int id = stoi(opcion.substr(pos1 + 1, pos2 - pos1 - 1));
+                string nombre = opcion.substr(pos2 + 1, pos3 - pos2 - 1);
+                int puntaje = stoi(opcion.substr(pos3 + 1));
 
-        ejercicio1->ADD(id, nombre, puntaje);
+                ejercicio1->ADD(id, nombre, puntaje);
             }
         }
         else if (primerLetra == 'F')
@@ -274,44 +262,4 @@ int main()
             ejercicio1->COUNT();
         }
     }
-
-        /*
-        string linea;
-    getline(cin, linea); // leo toda la línea completa
-
-    // obtengo el comando (primera palabra)
-    int pos = linea.find(' ');
-    string comando;
-    if (pos == string::npos) {
-        comando = linea; // comando solo (ej: "TOP1")
-    } else {
-        comando = linea.substr(0, pos);
-    }
-
-    if (comando == "ADD") {
-        int pos1 = linea.find(' ', pos + 1);
-        int pos2 = linea.find(' ', pos1 + 1);
-
-        int id = stoi(linea.substr(pos + 1, pos1 - (pos + 1)));
-        string nombre = linea.substr(pos1 + 1, pos2 - (pos1 + 1));
-        int puntaje = stoi(linea.substr(pos2 + 1));
-
-        ejercicio1->ADD(id, nombre, puntaje);
-
-    } else if (comando == "FIND") {
-        int id = stoi(linea.substr(pos + 1));
-        ejercicio1->FIND(id);
-
-    } else if (comando == "RANK") {
-        int puntaje = stoi(linea.substr(pos + 1));
-        ejercicio1->RANK(puntaje);
-
-    } else if (comando == "TOP1") {
-        ejercicio1->TOP1();
-
-    } else if (comando == "COUNT") {
-        ejercicio1->COUNT();
-    }
-    }
-    */
 }
