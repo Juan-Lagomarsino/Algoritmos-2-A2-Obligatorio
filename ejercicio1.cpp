@@ -24,40 +24,31 @@ private:
     NodoAVL *top1;
     int cantidadJugadores; // O(1)
 
-    int alturaPermitida(NodoAVL *nodo)
-    {
-        if (nodo == NULL)
-        {
+    int alturaPermitida(NodoAVL *nodo){
+        if (nodo == NULL){
             return 0;
         }
-        else
-        {
+        else{
             return nodo->alturaAVL;
         }
     }
 
-    int darBalance(NodoAVL *nodo)
-    {
-        if (nodo == NULL)
-        {
+    int darBalance(NodoAVL *nodo){
+        if (nodo == NULL){
             return 0;
         }
-        else
-        {
+        else{
             return alturaPermitida(nodo->der) - alturaPermitida(nodo->izq);
         }
     }
 
-    void actualizarAlturaNodo(NodoAVL *nodo)
-    {
-        if (nodo != NULL)
-        {
+    void actualizarAlturaNodo(NodoAVL *nodo){
+        if (nodo != NULL){
             nodo->alturaAVL = 1 + max(alturaPermitida(nodo->izq), alturaPermitida(nodo->der));
         }
     }
 
-    void rotacionDerecha(NodoAVL *&B)
-    {
+    void rotacionDerecha(NodoAVL *&B){
         NodoAVL *A = B->izq;
         NodoAVL *T2 = A->der;
         B->izq = T2;
@@ -67,8 +58,7 @@ private:
         B = A;
     }
 
-    void rotacionIzquierda(NodoAVL *&A)
-    {
+    void rotacionIzquierda(NodoAVL *&A){
         NodoAVL *B = A->der;
         NodoAVL *T2 = B->izq;
         A->der = T2;
@@ -175,8 +165,7 @@ private:
     }
 
 public:
-    AVL()
-    {
+    AVL(){
         raizId = NULL;
         raizPuntaje = NULL;
         top1 =NULL;
@@ -190,42 +179,36 @@ public:
         this->FINDRecursivo(raizId, id);
     };
 
-    void RANK(int puntaje)
-    {
+    void RANK(int puntaje){
         cout << this->RANKRecursivo(raizPuntaje, puntaje) << endl;
     }
 
-    void TOP1()
-    {
+    void TOP1(){
         if(this->top1==NULL){
             cout << "sin_jugadores" << endl;
         }else{
             cout << this->top1->nombreUsuario << " " << this->top1->puntajeActual << endl;
         }}
 
-    void COUNT()
-    {
+    void COUNT(){
         cout << this->cantidadJugadores << endl;
     }
 
 };
 
 
-int main()
-{
+int main(){
     AVL * ejercicio1 = new AVL();
     int n;
     cin >> n;
     cin.ignore(); // Limpia el espacio para depsues no haya errores de identacion.
 
-    for (int i =0 ; i<n ; i++)
-    {
+    for (int i =0 ; i<n ; i++){
         string opcion;
         getline(cin,opcion); // Que agarre toda la palabra
         char primerLetra = opcion.front();
             
-        if (primerLetra == 'A')
-        {   
+        if (primerLetra == 'A'){   
             if (primerLetra == 'A') {
                 int pos1 = opcion.find(" ");
                 int pos2 = opcion.find(" ", pos1 + 1);
@@ -238,27 +221,23 @@ int main()
                 ejercicio1->ADD(id, nombre, puntaje);
             }
         }
-        else if (primerLetra == 'F')
-        {   
+        else if (primerLetra == 'F'){   
             int pos = opcion.find(" ");
             string inst = opcion.substr(pos,opcion.length()-pos);
             int id = stoi(inst);
             ejercicio1->FIND(id);
         }
-        else if (primerLetra == 'R')
-        {   
+        else if (primerLetra == 'R'){   
             int pos = opcion.find(" ");
             string inst = opcion.substr(pos,opcion.length()-pos);
             int puntaje = stoi(inst);
             ejercicio1->RANK(puntaje);
 
         }
-        else if (primerLetra == 'T')
-        {
+        else if (primerLetra == 'T'){
             ejercicio1->TOP1();
         }
-        else if (primerLetra == 'C')
-        {
+        else if (primerLetra == 'C'){
             ejercicio1->COUNT();
         }
     }
