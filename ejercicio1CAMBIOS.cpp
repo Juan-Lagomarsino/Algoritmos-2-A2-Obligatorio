@@ -8,16 +8,19 @@ using namespace std;
 struct Jugador {
     int idJugador;
     string nUsuario; // Nombre usuario
-    int puntajeActual // O(1)
-    Jugador(int idJ, string nombre, int puntaje) : idJugador(idJ) , nUsuario(nombre), puntajeActual(puntaje) {}
+    int puntajeActual; // O(1)
+    int cantidadPuntaje;
+    Jugador(int idJ, string nombre, int puntaje) : idJugador(idJ) , nUsuario(nombre), puntajeActual(puntaje), cantidadPuntaje(1) {}
 };
 
 struct NodoAVL{
-    Jugador nodoJugador;
+    Jugador *nodoJugador;
     int alturaAVL;
     NodoAVL *izq;
     NodoAVL *der;
-    NodoAVL(Jugador jugador) : nodoJugador(jugador), alturaAVL(1), izq(NULL), der(NULL) {}
+    int cantidadDebajo;
+    //hacer un cantidad, que se va a usar solo en avl por puntajes.
+    NodoAVL(Jugador *jugador) : nodoJugador(jugador), alturaAVL(1), izq(NULL), der(NULL) {}
 };
 
 class AVL
@@ -27,7 +30,7 @@ private:
     NodoAVL *raizPuntaje;
     Jugador *top1;
     int cantidadJugadores; // O(1)
-
+    
     int alturaPermitida(NodoAVL *nodo){
         if (nodo == NULL){
             return 0;
@@ -52,6 +55,19 @@ private:
         }
     }
 
+    void actualizarCantidad(NodoAVL *nodo){
+        if(nodo!=NULL){
+            int cant = nodo->nodoJugador->cantidadPuntaje;
+            if(nodo->der!=NULL){
+                cant += nodo->der->cantidadDebajo;
+            }
+            if(nodo->izq!=NULL){
+                cant += nodo->izq->cantidadDebajo;
+            }
+            nodo->cantidadDebajo = cant;
+        }
+    }
+
     void rotacionDerecha(NodoAVL *&B){
         NodoAVL *A = B->izq;
         NodoAVL *T2 = A->der;
@@ -71,15 +87,39 @@ private:
         actualizarAlturaNodo(B);
         A = B;
     }
+    void rotacionDerechaPtj(NodoAVL *&B){
+        NodoAVL *A = B->izq;
+        NodoAVL *T2 = A->der;
+        B->izq = T2;
+        A->der = B;
+        actualizarAlturaNodo(B);
+        actualizarCantidad(B);
+        actualizarAlturaNodo(A);
+        actualizarCantidad(A);
+        B = A;
+    }
+
+    void rotacionIzquierdaPtj(NodoAVL *&A){
+        NodoAVL *B = A->der;
+        NodoAVL *T2 = B->izq;
+        A->der = T2;
+        B->izq = A;
+        actualizarAlturaNodo(A);
+        actualizarCantidad(A);
+        actualizarAlturaNodo(B);
+        actualizarCantidad(B);
+        A = B;
+    }
 
     void ADDRecursivoId(NodoAVL *&nodo, int id, string nombre, int puntaje){
         if(nodo == NULL) {
-            Jugador jugador = new Jugador(id,nombre,puntaje);
+            Jugador * jugador = new Jugador(id,nombre,puntaje);
             nodo = new NodoAVL(jugador);
             this->cantidadJugadores++;
-        } else if (nodo->idJugador < id){
+            ADDRecursivoPtj(raizPuntaje, id, nombre, puntaje);
+        } else if (nodo->nodoJugador->idJugador < id){
             ADDRecursivoId(nodo->der, id, nombre, puntaje);
-        } else if (nodo->idJugador > id){
+        } else if (nodo->nodoJugador->idJugador > id){
             ADDRecursivoId(nodo->izq, id, nombre, puntaje);
         }else{
             return;
@@ -88,6 +128,7 @@ private:
     
         actualizarAlturaNodo(nodo);
 
+        
         int balance = darBalance(nodo);
         
         // caso izq izq
@@ -110,37 +151,49 @@ private:
     
     void ADDRecursivoPtj(NodoAVL *&nodo, int id, string nombre, int puntaje){
         if(nodo == NULL) {
-            Jugador jugador = new Jugador(id,nombre,puntaje);
+            Jugador * jugador = new Jugador(id,nombre,puntaje);
             nodo = new NodoAVL(jugador);
             if(this->top1==NULL || (this->top1!=NULL && this->top1->puntajeActual<puntaje) || (this->top1!=NULL && this->top1->puntajeActual == puntaje && this->top1->idJugador > id) ){
                 this->top1 = jugador;
             }
-        } else if (nodo->jugador->puntajeActual < puntaje){
+        } else if (nodo->nodoJugador->puntajeActual < puntaje){
             ADDRecursivoPtj(nodo->der, id, nombre, puntaje);
-        } else if (nodo->jugador->puntajeActual >= puntaje){
+        } else if (nodo->nodoJugador->puntajeActual > puntaje){
             ADDRecursivoPtj(nodo->izq, id, nombre, puntaje);
-        } 
+        } else if (nodo->nodoJugador->puntajeActual == puntaje){
+            nodo->nodoJugador->cantidadPuntaje++;
+            if(this->top1!=NULL && this->top1->puntajeActual == puntaje && this->top1->idJugador > id){
+                string nombreA = this->top1->nUsuario;
+                int idA = this->top1->idJugador;
+                this->top1->idJugador=id;
+                this->top1->nUsuario=nombre;
+                ADDRecursivoPtj(nodo->izq, idA, nombreA, puntaje);
+            }else{
+                ADDRecursivoPtj(nodo->izq, id, nombre, puntaje);
+            }
+        }
         
         
     
         actualizarAlturaNodo(nodo);
+        actualizarCantidad(nodo);
 
         int balance = darBalance(nodo);
         
         // caso izq izq
-        if(balance < -1 && nodo->izq->puntajeActual > puntaje) {
-            rotacionDerecha(nodo);
+        if(balance < -1 && nodo->izq->nodoJugador->puntajeActual > puntaje) {
+            rotacionDerechaPtj(nodo);
         // caso izq der
-        }else if( balance < -1 && nodo->izq->puntajeActual < puntaje) {
-            rotacionIzquierda(nodo->izq);
-            rotacionDerecha(nodo);
+        }else if( balance < -1 && nodo->izq->nodoJugador->puntajeActual < puntaje) {
+            rotacionIzquierdaPtj(nodo->izq);
+            rotacionDerechaPtj(nodo);
         // caso der der
-        }else if(balance > 1 && nodo->der->puntajeActual < puntaje) {
-            rotacionIzquierda(nodo);
+        }else if(balance > 1 && nodo->der->nodoJugador->puntajeActual < puntaje) {
+            rotacionIzquierdaPtj(nodo);
         // caso der izq
-        }else if( balance > 1 && nodo->der->puntajeActual > puntaje) {
-            rotacionDerecha(nodo->der);
-            rotacionIzquierda(nodo);
+        }else if( balance > 1 && nodo->der->nodoJugador->puntajeActual > puntaje) {
+            rotacionDerechaPtj(nodo->der);
+            rotacionIzquierdaPtj(nodo);
         }
     }
 
@@ -148,23 +201,23 @@ private:
         if(nodo == NULL){
             cout << "jugador_no_encontrado" << endl;
         }
-        else if(nodo->idJugador == id){
-            cout << nodo->nombreUsuario << " " <<nodo->puntajeActual << endl;
+        else if(nodo->nodoJugador->idJugador == id){
+            cout << nodo->nodoJugador->nUsuario << " " <<nodo->nodoJugador->puntajeActual << endl;
         }
-        else if(nodo->idJugador > id){
+        else if(nodo->nodoJugador->idJugador > id){
             FINDRecursivo(nodo->izq, id);
         }
-        else if(nodo->idJugador < id){
+        else if(nodo->nodoJugador->idJugador < id){
             FINDRecursivo(nodo->der, id);
         }
     }
     
     int RANKRecursivo(NodoAVL* nodo,int puntaje){
         if(nodo!=NULL){
-            if(nodo->puntajeActual>=puntaje){
-                return 1 + RANKRecursivo(nodo->izq,puntaje) + RANKRecursivo(nodo->der,puntaje);
+            if(nodo->nodoJugador->puntajeActual>=puntaje){
+                return (nodo->der->cantidadDebajo + nodo->nodoJugador->cantidadPuntaje + RANKRecursivo(nodo->izq,puntaje));
             }else{
-                return RANKRecursivo(nodo->izq,puntaje) + RANKRecursivo(nodo->der,puntaje);
+                return RANKRecursivo(nodo->der,puntaje);
             }
         }
         return 0;
@@ -175,6 +228,7 @@ public:
         raizId = NULL;
         raizPuntaje = NULL;
         top1 =NULL;
+        cantidadJugadores = 0;
     };
     void ADD(int id, string nombre, int puntaje) {
         this->ADDRecursivoId(raizId, id, nombre, puntaje);
@@ -192,7 +246,7 @@ public:
         if(this->top1==NULL){
             cout << "sin_jugadores" << endl;
         }else{
-            cout << this->top1->nombreUsuario << " " << this->top1->puntajeActual << endl;
+            cout << this->top1->nUsuario << " " << this->top1->puntajeActual << endl;
         }}
 
     void COUNT(){

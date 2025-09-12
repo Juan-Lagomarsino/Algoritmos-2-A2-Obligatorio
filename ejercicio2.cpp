@@ -11,6 +11,8 @@ struct nodoRecurso{
     int tiempo;
 };
 //Dice que se hace con hash , y el hash debe usar una funcion de doble hash. Pero no se sobre que, no lo pense.
+
+// Una solo el domino, y la otra el odminio y el path de clave
 struct tablaHash {
     nodoRecurso** tabla;
     int largo;
