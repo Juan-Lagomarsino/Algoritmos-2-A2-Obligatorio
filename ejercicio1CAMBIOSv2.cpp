@@ -247,7 +247,11 @@ private:
     int RANKRecursivo(NodoAVLxPTJ* nodo,int puntaje){
         if(nodo!=NULL){
             if(nodo->nodoJugador->puntajeActual>=puntaje){
-                return (nodo->der->cantidadDebajo + nodo->nodoJugador->cantidadPuntaje + RANKRecursivo(nodo->izq,puntaje));
+                if(nodo->der != NULL){
+                    return (nodo->der->cantidadDebajo + nodo->nodoJugador->cantidadPuntaje + RANKRecursivo(nodo->izq,puntaje));
+                }else{
+                    return (nodo->nodoJugador->cantidadPuntaje + RANKRecursivo(nodo->izq,puntaje));
+                }
             }else{
                 return RANKRecursivo(nodo->der,puntaje);
             }
