@@ -22,7 +22,7 @@ private:
     NodoAVL *raizId;
     NodoAVL *raizPuntaje;
     NodoAVL *top1;
-    int cantidadJugadores; // O(1)
+    int cantidadJugadores = 0; // O(1)
 
     int alturaPermitida(NodoAVL *nodo){
         if (nodo == NULL){
